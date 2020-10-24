@@ -20,6 +20,7 @@ export default function MyDices() {
   const controls = useRef(null)
   const [multiplier, setMultiplier] = useState(1)
   const [diceType, setDiceType] = useState("d20")
+  let sides = Number(diceType.substring(1))
   let rollResult = 0
 
   let diceT = {}
@@ -255,13 +256,16 @@ export default function MyDices() {
     console.log(mount.current.offsetWidth)
   }, []) // eslint-disable-line
 
-  useEffect(() => {}, [multiplier, diceType]) // eslint-disable-line
+  useEffect(() => {
+    console.log("mult", multiplier)
+    console.log("Nmult", Number(multiplier))
+  }, [multiplier]) // eslint-disable-line
 
   const handleThrow = () => {
     const diceResult = []
 
     const random = () => {
-      return Math.floor(Math.random() * Number(20)) + 1
+      return Math.floor(Math.random() * Number(sides)) + 1
     }
 
     // eslint-disable-next-line
@@ -281,7 +285,7 @@ export default function MyDices() {
   }
 
   return (
-    <Styles.Container ref={mount}>
+    <Styles.Container>
       <Styles.DicesRollContainer ref={mount} />
 
       <Styles.PanelContainer>
