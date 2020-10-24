@@ -257,7 +257,6 @@ export default function MyDices() {
 
   useEffect(() => {
     dice_box()
-    randomDiceThrow()
   }, []) // eslint-disable-line
 
   const handleThrow = () => {
@@ -271,8 +270,8 @@ export default function MyDices() {
   }
 
   return (
-    <Styles.Container>
-      <Styles.DicesRollContainer ref={mount}></Styles.DicesRollContainer>
+    <Styles.Container ref={mount}>
+      <Styles.DicesRollContainer></Styles.DicesRollContainer>
 
       <Styles.PanelContainer>
         <Styles.DicesContainer>
