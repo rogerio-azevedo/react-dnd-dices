@@ -21,7 +21,6 @@ export default function MyDices() {
   const controls = useRef(null)
   const [multiplier, setMultiplier] = useState(1)
   const [input, setInput] = useState("d20")
-  const inputRef = useRef(null)
 
   let diceT = {}
   let diceType = "d20"
@@ -139,7 +138,7 @@ export default function MyDices() {
     barrier.position.set(1, width, 0)
     world.add(barrier)
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < multiplier; i++) {
       // eslint-disable-next-line
       switch (diceType) {
         case "d4":
@@ -271,12 +270,6 @@ export default function MyDices() {
     setInput(type)
   }
 
-  function handleTest(type) {
-    setTimeout(() => {
-      console.log(inputRef.current)
-    }, 3500)
-  }
-
   return (
     <Styles.Container>
       <Styles.DicesRollContainer ref={mount}></Styles.DicesRollContainer>
@@ -293,9 +286,7 @@ export default function MyDices() {
               placeholder="1"
               onChange={(e) => setMultiplier(e.target.value)}
             />
-            <Styles.DiceButton id="throw" onClick={handleThrow}>
-              Roll
-            </Styles.DiceButton>
+            <Styles.DiceButton onClick={handleThrow}>Roll</Styles.DiceButton>
           </Styles.InputContainer>
 
           <Styles.DiceContainer>
