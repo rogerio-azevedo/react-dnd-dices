@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from "react"
 
 import * as THREE from "three"
 import * as CANNON from "cannon"
-import Stats from "../../../node_modules/three/examples/js/libs//stats.min.js"
 
 import * as Styles from "./styles"
 
@@ -20,13 +19,13 @@ export default function MyDices() {
   const mount = useRef(null)
   const controls = useRef(null)
   const [multiplier, setMultiplier] = useState(1)
-  const [input, setInput] = useState("d20")
+  const [diceType, setDiceType] = useState("d20")
+  let rollResult = 0
 
   let diceT = {}
-  let diceType = "d20"
 
-  let width = window.innerWidth
-  let height = window.innerHeight
+  let width = window.innerWidth * 0.8
+  let height = window.innerHeight * 0.8
   let frameId
 
   let dice = []
@@ -34,7 +33,6 @@ export default function MyDices() {
   let camera = []
   let renderer = []
   let world = []
-  let stats = []
   let barrier = []
 
   const dice_color = "#200122"
@@ -75,8 +73,6 @@ export default function MyDices() {
     light.shadow.mapSize.width = 1024
     light.shadow.mapSize.height = 1024
     scene.add(light)
-
-    stats = new Stats()
 
     // FLOOR
     let floorMaterial = new THREE.MeshPhongMaterial({
@@ -128,7 +124,6 @@ export default function MyDices() {
     // barrier.position.set(0, -height * 0.93, 0)
     // world.add(barrier)
 
-    //PAREDE DIREITA
     barrier = new CANNON.Body({
       mass: 0,
       shape: new CANNON.Plane(),
@@ -194,7 +189,6 @@ export default function MyDices() {
     }
 
     function update() {
-      stats.update()
       controls.current.stop()
     }
 
@@ -226,11 +220,12 @@ export default function MyDices() {
     }
   }
 
-  function randomDiceThrow() {
+  function randomDiceThrow(diceResult) {
     let diceValues = []
+    console.log(diceResult)
 
     for (let i = 0; i < dice.length; i++) {
-      let yRand = Math.floor(Math.random() * 20) + 1
+      let yRand = Math.floor(Math.random() * 3) + 1
       dice[i].getObject().position.x = -35 - (i % 3) * 1.5
       dice[i].getObject().position.y = 2 + Math.floor(i / 3) * 1.5
       dice[i].getObject().position.z = -15 + (i % 3) * 1.5
@@ -249,7 +244,7 @@ export default function MyDices() {
           30 * Math.random() - 10
         )
 
-      diceValues.push({ dice: dice[i], value: yRand })
+      diceValues.push({ dice: dice[i], value: diceResult[i] })
     }
 
     DiceManager.prepareValues(diceValues)
@@ -257,21 +252,37 @@ export default function MyDices() {
 
   useEffect(() => {
     dice_box()
+    console.log(mount.current.offsetWidth)
   }, []) // eslint-disable-line
 
+  useEffect(() => {}, [multiplier, diceType]) // eslint-disable-line
+
   const handleThrow = () => {
+    const diceResult = []
+
+    const random = () => {
+      return Math.floor(Math.random() * Number(20)) + 1
+    }
+
+    // eslint-disable-next-line
+    for (let i = 0; i < multiplier; i++) {
+      diceResult.push(random())
+    }
+
+    rollResult = diceResult.reduce((a, b) => a + b, 0)
+
     if (!DiceManager.throwRunning) {
-      randomDiceThrow()
+      randomDiceThrow(diceResult)
     }
   }
 
   function handleDice(type) {
-    setInput(type)
+    setDiceType(type)
   }
 
   return (
     <Styles.Container ref={mount}>
-      <Styles.DicesRollContainer></Styles.DicesRollContainer>
+      <Styles.DicesRollContainer ref={mount} />
 
       <Styles.PanelContainer>
         <Styles.DicesContainer>
@@ -289,27 +300,27 @@ export default function MyDices() {
           </Styles.InputContainer>
 
           <Styles.DiceContainer>
-            <Styles.Dice4 input={input} onClick={() => handleDice("d4")}>
+            <Styles.Dice4 input={diceType} onClick={() => handleDice("d4")}>
               <strong>d4</strong>
             </Styles.Dice4>
 
-            <Styles.Dice6 input={input} onClick={() => handleDice("d6")}>
+            <Styles.Dice6 input={diceType} onClick={() => handleDice("d6")}>
               <strong>d6</strong>
             </Styles.Dice6>
 
-            <Styles.Dice8 input={input} onClick={() => handleDice("d8")}>
+            <Styles.Dice8 input={diceType} onClick={() => handleDice("d8")}>
               <strong>d8</strong>
             </Styles.Dice8>
 
-            <Styles.Dice10 input={input} onClick={() => handleDice("d10")}>
+            <Styles.Dice10 input={diceType} onClick={() => handleDice("d10")}>
               <strong>d10</strong>
             </Styles.Dice10>
 
-            <Styles.Dice12 input={input} onClick={() => handleDice("d12")}>
+            <Styles.Dice12 input={diceType} onClick={() => handleDice("d12")}>
               <strong>d12</strong>
             </Styles.Dice12>
 
-            <Styles.Dice20 input={input} onClick={() => handleDice("d20")}>
+            <Styles.Dice20 input={diceType} onClick={() => handleDice("d20")}>
               <strong>d20</strong>
             </Styles.Dice20>
           </Styles.DiceContainer>
@@ -318,10 +329,6 @@ export default function MyDices() {
           <h1>logs</h1>
         </Styles.LogContainer>
       </Styles.PanelContainer>
-
-      {/* <button type="button" onClick={handleThrow}>
-        Rolar
-      </button> */}
     </Styles.Container>
   )
 }
